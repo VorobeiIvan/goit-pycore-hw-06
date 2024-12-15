@@ -3,15 +3,14 @@ from src.parser import parse_input
 from src.decorator.colorize_message import colorize_message
 from src.decorator.input_error import input_error
 from src.constants import messages_error, messages
-
+from src.classes import AddressBook
 
 @colorize_message
 @input_error
 def bot():
     """Основний цикл бота."""
-    contacts = {}
+    contacts = AddressBook()  # Використовуємо AddressBook для зберігання контактів
     print(messages["start_bot"])
-    
     while True:
         user_input = input(messages["user_input"])
         command, args = parse_input(user_input)

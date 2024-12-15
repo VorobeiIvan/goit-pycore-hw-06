@@ -1,7 +1,7 @@
 from src.decorator.colorize_message import colorize_message  
 from src.decorator.input_error import input_error
 from src.constants import messages_error, messages
-
+from src.classes import AddressBook, Record
 
 @colorize_message
 @input_error
@@ -10,7 +10,9 @@ def add_contact(args, contacts):
     if len(args) != 2:
         return messages_error["usage_add"]
     name, phone = args
-    contacts[name] = phone
+    record = Record(name)
+    record.add_phone(phone)
+    contacts.add_record(record)
     return messages["add_contact"]
 
 @colorize_message
@@ -20,8 +22,9 @@ def change_contact(args, contacts):
     if len(args) != 2:
         return messages_error["usage_change"]
     name, new_phone = args
-    if name in contacts:
-        contacts[name] = new_phone
+    contact = contacts.find(name)
+    if contact:
+        contact.edit_phone(contact.phones[0].value, new_phone)
         return messages["change_contact"]
     return messages_error["not_found"]
 
@@ -30,10 +33,11 @@ def change_contact(args, contacts):
 def show_phone(args, contacts):
     """Повертає номер телефону за іменем."""
     if len(args) != 1:
-        return  messages_error["usage_phone"]
+        return messages_error["usage_phone"]
     name = args[0]
-    if name in contacts:
-        return contacts[name]
+    contact = contacts.find(name)
+    if contact:
+        return contact.phones[0].value
     return messages_error["not_found"]
 
 @colorize_message
@@ -42,7 +46,7 @@ def show_all(contacts):
     """Показує всі контакти."""
     if not contacts:
         return messages_error["no_contacts"]
-    return "\n".join(f"{name}: {phone}" for name, phone in contacts.items())
+    return "\n".join(str(record) for record in contacts.data.values())
 
 @colorize_message
 def start_bot():
